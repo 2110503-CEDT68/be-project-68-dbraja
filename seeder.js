@@ -89,69 +89,69 @@ const usersData = [
         role: 'admin',
         password: 'password123'
     },
-    {
-        name: 'Alice Johnson',
-        tel: '0622222222',
-        email: 'alice.johnson@example.com',
-        role: 'user',
-        password: 'password123'
-    },
-    {
-        name: 'Bob Smith',
-        tel: '0633333333',
-        email: 'bob.smith@example.com',
-        role: 'user',
-        password: 'password123'
-    },
-    {
-        name: 'Carol White',
-        tel: '0644444444',
-        email: 'carol.white@example.com',
-        role: 'user',
-        password: 'password123'
-    },
-    {
-        name: 'David Brown',
-        tel: '0655555555',
-        email: 'david.brown@example.com',
-        role: 'user',
-        password: 'password123'
-    },
-    {
-        name: 'Eva Martinez',
-        tel: '0666666666',
-        email: 'eva.martinez@example.com',
-        role: 'user',
-        password: 'password123'
-    },
-    {
-        name: 'Frank Lee',
-        tel: '0677777777',
-        email: 'frank.lee@example.com',
-        role: 'user',
-        password: 'password123'
-    },
-    {
-        name: 'Grace Kim',
-        tel: '0688888888',
-        email: 'grace.kim@example.com',
-        role: 'user',
-        password: 'password123'
-    },
-    {
-        name: 'Henry Chen',
-        tel: '0699999999',
-        email: 'henry.chen@example.com',
-        role: 'user',
-        password: 'password123'
-    },
-    {
-        name: 'Iris Nguyen',
-        tel: '0610101010',
-        email: 'iris.nguyen@example.com',
-        role: 'user',
-        password: 'password123'
-    }
+    // {
+    //     name: 'Alice Johnson',
+    //     tel: '0622222222',
+    //     email: 'alice.johnson@example.com',
+    //     role: 'user',
+    //     password: 'password123'
+    // },
+    // {
+    //     name: 'Bob Smith',
+    //     tel: '0633333333',
+    //     email: 'bob.smith@example.com',
+    //     role: 'user',
+    //     password: 'password123'
+    // },
+    // {
+    //     name: 'Carol White',
+    //     tel: '0644444444',
+    //     email: 'carol.white@example.com',
+    //     role: 'user',
+    //     password: 'password123'
+    // },
+    // {
+    //     name: 'David Brown',
+    //     tel: '0655555555',
+    //     email: 'david.brown@example.com',
+    //     role: 'user',
+    //     password: 'password123'
+    // },
+    // {
+    //     name: 'Eva Martinez',
+    //     tel: '0666666666',
+    //     email: 'eva.martinez@example.com',
+    //     role: 'user',
+    //     password: 'password123'
+    // },
+    // {
+    //     name: 'Frank Lee',
+    //     tel: '0677777777',
+    //     email: 'frank.lee@example.com',
+    //     role: 'user',
+    //     password: 'password123'
+    // },
+    // {
+    //     name: 'Grace Kim',
+    //     tel: '0688888888',
+    //     email: 'grace.kim@example.com',
+    //     role: 'user',
+    //     password: 'password123'
+    // },
+    // {
+    //     name: 'Henry Chen',
+    //     tel: '0699999999',
+    //     email: 'henry.chen@example.com',
+    //     role: 'user',
+    //     password: 'password123'
+    // },
+    // {
+    //     name: 'Iris Nguyen',
+    //     tel: '0610101010',
+    //     email: 'iris.nguyen@example.com',
+    //     role: 'user',
+    //     password: 'password123'
+    // }
 ];
 
 const importData = async () => {
@@ -176,16 +176,16 @@ const importData = async () => {
         // Build registrations using real IDs
         // Dates must be between 2022-05-10 and 2022-05-13
         const registrations = [
-            { apptDate: new Date('2022-05-10'), user: insertedUsers[1]._id, company: insertedCompanies[0]._id },
-            { apptDate: new Date('2022-05-10'), user: insertedUsers[2]._id, company: insertedCompanies[1]._id },
-            { apptDate: new Date('2022-05-11'), user: insertedUsers[3]._id, company: insertedCompanies[2]._id },
-            { apptDate: new Date('2022-05-11'), user: insertedUsers[4]._id, company: insertedCompanies[3]._id },
-            { apptDate: new Date('2022-05-11'), user: insertedUsers[5]._id, company: insertedCompanies[4]._id },
-            { apptDate: new Date('2022-05-12'), user: insertedUsers[6]._id, company: insertedCompanies[5]._id },
-            { apptDate: new Date('2022-05-12'), user: insertedUsers[7]._id, company: insertedCompanies[6]._id },
-            { apptDate: new Date('2022-05-12'), user: insertedUsers[8]._id, company: insertedCompanies[7]._id },
-            { apptDate: new Date('2022-05-13'), user: insertedUsers[9]._id, company: insertedCompanies[8]._id },
-            { apptDate: new Date('2022-05-13'), user: insertedUsers[1]._id, company: insertedCompanies[9]._id },
+            // { apptDate: new Date('2022-05-10'), user: insertedUsers[1]._id, company: insertedCompanies[0]._id },
+            // { apptDate: new Date('2022-05-10'), user: insertedUsers[2]._id, company: insertedCompanies[1]._id },
+            // { apptDate: new Date('2022-05-11'), user: insertedUsers[3]._id, company: insertedCompanies[2]._id },
+            // { apptDate: new Date('2022-05-11'), user: insertedUsers[4]._id, company: insertedCompanies[3]._id },
+            // { apptDate: new Date('2022-05-11'), user: insertedUsers[5]._id, company: insertedCompanies[4]._id },
+            // { apptDate: new Date('2022-05-12'), user: insertedUsers[6]._id, company: insertedCompanies[5]._id },
+            // { apptDate: new Date('2022-05-12'), user: insertedUsers[7]._id, company: insertedCompanies[6]._id },
+            // { apptDate: new Date('2022-05-12'), user: insertedUsers[8]._id, company: insertedCompanies[7]._id },
+            // { apptDate: new Date('2022-05-13'), user: insertedUsers[9]._id, company: insertedCompanies[8]._id },
+            // { apptDate: new Date('2022-05-13'), user: insertedUsers[1]._id, company: insertedCompanies[9]._id },
         ];
 
         const insertedRegistrations = await Registration.insertMany(registrations);
