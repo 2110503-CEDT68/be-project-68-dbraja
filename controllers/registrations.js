@@ -104,7 +104,7 @@ exports.deleteRegistration = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Not authorized to delete this registration' });
     }
 
-    await registration.remove();
+    await registration.deleteOne();
 
     res.status(200).json({ success: true, data: {} });
   } catch (err) {

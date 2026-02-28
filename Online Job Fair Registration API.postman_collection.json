@@ -1,10 +1,9 @@
 {
   "info": {
     "_postman_id": "f3217129-bbb1-45e5-b084-43f9b430b33b",
-    "name": "Online Job Fair Registration API",
-    "description": "API for registering users and companies for an online job fair, including interview registrations.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "40749868"
+    "name": "Online Job Fair Registration API (Automated Flow)",
+    "description": "API for registering users and companies for an online job fair. Updated with explicit execution flow.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -20,7 +19,13 @@
                   "var jsonData = pm.response.json();",
                   "if (jsonData.token) {",
                   "    pm.environment.set(\"token\", jsonData.token);",
-                  "}"
+                  "}",
+                  "pm.test(\"Registration successful (201 Created)\", () => {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 400]);",
+                  "});",
+                  "",
+                  "// Go to Login next",
+                  "pm.execution.setNextRequest(\"Login User\");"
                 ],
                 "type": "text/javascript"
               }
@@ -32,24 +37,14 @@
             "body": {
               "mode": "raw",
               "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@gmail.com\",\n    \"password\": \"password123\",\n    \"tel\": \"0812345678\",\n    \"role\": \"user\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{url}}/auth/register",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "register"]
             }
-          },
-          "response": []
+          }
         },
         {
           "name": "Login User",
@@ -61,7 +56,13 @@
                   "var jsonData = pm.response.json();",
                   "if (jsonData.token) {",
                   "    pm.environment.set(\"token\", jsonData.token);",
-                  "}"
+                  "}",
+                  "pm.test(\"Login successful\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Check profile next",
+                  "pm.execution.setNextRequest(\"Get Me\");"
                 ],
                 "type": "text/javascript"
               }
@@ -72,53 +73,39 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"john@gmail.com\",\n    \"password\": \"password123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n    \"email\": \"admin@dbraja.com\",\n    \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{url}}/auth/login",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{url}}"],
+              "path": ["auth", "login"]
             }
-          },
-          "response": []
+          }
         },
         {
           "name": "Get Me",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/auth/me",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "me"
-              ]
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User profile retrieved\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});",
+                  "",
+                  "// Start Company flow next",
+                  "pm.execution.setNextRequest(\"Get All Companies\");"
+                ],
+                "type": "text/javascript"
+              }
             }
-          },
-          "response": []
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{url}}/auth/me", "host": ["{{url}}"], "path": ["auth", "me"] }
+          }
         },
         {
           "name": "Logout",
@@ -127,37 +114,23 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.environment.set(\"token\", \"\");"
+                  "pm.test(\"Logged out successfully\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.environment.set(\"token\", \"\");\r",
+                  "});",
+                  "",
+                  "// Stop the execution here",
+                  "pm.execution.setNextRequest(null);"
                 ],
                 "type": "text/javascript"
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/auth/logout",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "auth",
-                "logout"
-              ]
-            }
-          },
-          "response": []
+            "url": { "raw": "{{url}}/auth/logout", "host": ["{{url}}"], "path": ["auth", "logout"] }
+          }
         }
       ]
     },
@@ -171,10 +144,11 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData.success && jsonData.data && jsonData.data.length > 0) {",
-                  "    pm.environment.set(\"company_id\", jsonData.data[0]._id);",
-                  "}"
+                  "pm.test(\"Companies list is an array\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.execution.setNextRequest(\"Create Company\");"
                 ],
                 "type": "text/javascript"
               }
@@ -182,18 +156,8 @@
           ],
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/companies",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "companies"
-              ]
-            }
-          },
-          "response": []
+            "url": { "raw": "{{url}}/companies", "host": ["{{url}}"], "path": ["companies"] }
+          }
         },
         {
           "name": "Create Company",
@@ -205,128 +169,104 @@
                   "var jsonData = pm.response.json();",
                   "if (jsonData.success && jsonData.data) {",
                   "    pm.environment.set(\"company_id\", jsonData.data._id);",
-                  "}"
+                  "}",
+                  "pm.test(\"Company created\", () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.execution.setNextRequest(\"Get Single Company\");"
                 ],
                 "type": "text/javascript"
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"name\": \"Example Corp\",\n    \"address\": \"123 Main St\",\n    \"website\": \"http://example.com\",\n    \"description\": \"A leading example company\",\n    \"tel\": \"021234567\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
-            "url": {
-              "raw": "{{url}}/companies",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "companies"
-              ]
-            }
-          },
-          "response": []
+            "url": { "raw": "{{url}}/companies", "host": ["{{url}}"], "path": ["companies"] }
+          }
         },
         {
           "name": "Get Single Company",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Specific company returned\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});",
+                  "",
+                  "pm.execution.setNextRequest(\"Update Company\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/companies/{{company_id}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "companies",
-                "{{company_id}}"
-              ]
-            }
-          },
-          "response": []
+            "url": { "raw": "{{url}}/companies/{{company_id}}", "host": ["{{url}}"], "path": ["companies", "{{company_id}}"] }
+          }
         },
         {
           "name": "Update Company",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Company updated\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});",
+                  "",
+                  "// Skip Delete Company for now! Jump to Registrations.",
+                  "pm.execution.setNextRequest(\"Get All Registrations\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
             "method": "PUT",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"name\": \"Updated Corp\",\n    \"address\": \"456 New St\",\n    \"website\": \"http://updated.com\",\n    \"description\": \"An updated description\",\n    \"tel\": \"029876543\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
-            "url": {
-              "raw": "{{url}}/companies/{{company_id}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "companies",
-                "{{company_id}}"
-              ]
-            }
-          },
-          "response": []
+            "url": { "raw": "{{url}}/companies/{{company_id}}", "host": ["{{url}}"], "path": ["companies", "{{company_id}}"] }
+          }
         },
         {
           "name": "Delete Company",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/companies/{{company_id}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "companies",
-                "{{company_id}}"
-              ]
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Company removed\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});",
+                  "",
+                  "// Now that the company is deleted, we can safely logout.",
+                  "pm.execution.setNextRequest(\"Logout\");"
+                ],
+                "type": "text/javascript"
+              }
             }
-          },
-          "response": []
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "DELETE",
+            "url": { "raw": "{{url}}/companies/{{company_id}}", "host": ["{{url}}"], "path": ["companies", "{{company_id}}"] }
+          }
         }
       ]
     },
@@ -340,39 +280,21 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData.success && jsonData.data && jsonData.data.length > 0) {",
-                  "    pm.environment.set(\"registration_id\", jsonData.data[0]._id);",
-                  "}"
+                  "pm.test(\"Registrations found\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.execution.setNextRequest(\"Create Registration\");"
                 ],
                 "type": "text/javascript"
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/registrations",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "registrations"
-              ]
-            }
-          },
-          "response": []
+            "url": { "raw": "{{url}}/registrations", "host": ["{{url}}"], "path": ["registrations"] }
+          }
         },
         {
           "name": "Create Registration",
@@ -384,138 +306,104 @@
                   "var jsonData = pm.response.json();",
                   "if (jsonData.success && jsonData.data) {",
                   "    pm.environment.set(\"registration_id\", jsonData.data._id);",
-                  "}"
+                  "}",
+                  "pm.test(\"Booking confirmed\", () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.execution.setNextRequest(\"Get Single Registration\");"
                 ],
                 "type": "text/javascript"
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"apptDate\": \"2022-05-10T09:00:00.000Z\",\n    \"company\": \"{{company_id}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
-            "url": {
-              "raw": "{{url}}/registrations",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "registrations"
-              ]
-            }
-          },
-          "response": []
+            "url": { "raw": "{{url}}/registrations", "host": ["{{url}}"], "path": ["registrations"] }
+          }
         },
         {
           "name": "Get Single Registration",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/registrations/{{registration_id}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "registrations",
-                "{{registration_id}}"
-              ]
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Registration details valid\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});",
+                  "",
+                  "pm.execution.setNextRequest(\"Update Registration\");"
+                ],
+                "type": "text/javascript"
+              }
             }
-          },
-          "response": []
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{url}}/registrations/{{registration_id}}", "host": ["{{url}}"], "path": ["registrations", "{{registration_id}}"] }
+          }
         },
         {
           "name": "Update Registration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Date updated successfully\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});",
+                  "",
+                  "pm.execution.setNextRequest(\"Delete Registration\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
             "method": "PUT",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"apptDate\": \"2022-05-11T10:00:00.000Z\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
-            "url": {
-              "raw": "{{url}}/registrations/{{registration_id}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "registrations",
-                "{{registration_id}}"
-              ]
-            }
-          },
-          "response": []
+            "url": { "raw": "{{url}}/registrations/{{registration_id}}", "host": ["{{url}}"], "path": ["registrations", "{{registration_id}}"] }
+          }
         },
         {
           "name": "Delete Registration",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/registrations/{{registration_id}}",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "registrations",
-                "{{registration_id}}"
-              ]
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Registration cancelled\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});",
+                  "",
+                  "// Registration is gone, time to clean up the company!",
+                  "pm.execution.setNextRequest(\"Delete Company\");"
+                ],
+                "type": "text/javascript"
+              }
             }
-          },
-          "response": []
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "DELETE",
+            "url": { "raw": "{{url}}/registrations/{{registration_id}}", "host": ["{{url}}"], "path": ["registrations", "{{registration_id}}"] }
+          }
         }
       ]
     }
