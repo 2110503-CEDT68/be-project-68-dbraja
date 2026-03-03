@@ -26,6 +26,8 @@ const companies = require('./routes/companies');
 const auth = require('./routes/auth');
 const registrations  = require('./routes/registrations');
 
+const stats = require('./routes/stats');
+
 const app = express();
 
 // Use extended query parser
@@ -41,7 +43,24 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 
 //Helmet
-app.use(helmet());
+app.use((req, res, next) => {
+    if (req.path === '/dashboard.html') {
+        // Dashboard ต้องการ CDN script และ inline script
+        helmet({
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com"],
+                    styleSrc: ["'self'", "'unsafe-inline'"],
+                    connectSrc: ["'self'", "http://localhost:5000"]
+                }
+            }
+        })(req, res, next);
+    } else {
+        // Route อื่นใช้ Helmet ปกติ
+        helmet()(req, res, next);
+    }
+});
 
 //Prevent XSS attacks
 app.use(xss());
@@ -84,6 +103,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api/v1/companies', companies);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/registrations', registrations);
+
+// เพิ่ม mount (ใต้ routes เดิม)
+app.use('/api/v1/stats', stats);
+
+// เสิร์ฟ dashboard HTML (optional)
+app.use(express.static('public'));
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, console.log('Server running in', process.env.NODE_ENV, 'mode on port', PORT));

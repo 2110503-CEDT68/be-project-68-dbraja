@@ -67,13 +67,11 @@ exports.getCompany = async (req,res,next)=>{
         if (!company) {
             return res.status(400).json({success: false});
         }
-
         res.status(200).json({success: true,data:company});
     } catch(err) {
         res.status(400).json({success:false});
     }
 };
-
 exports.createCompany = async (req,res,next)=>{
     const company = await Company.create(req.body);
     res.status(201).json({success:true, data: company});
