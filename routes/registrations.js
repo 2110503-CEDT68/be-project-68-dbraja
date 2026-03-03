@@ -4,12 +4,15 @@ const {
     getRegistration,
     createRegistration,
     updateRegistration,
-    deleteRegistration
+    deleteRegistration,
+    getRegistrationStats
 } = require('../controllers/registrations');
 
 const router = express.Router();
 
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+router.route('/stats').get(protect, authorize('admin'), getRegistrationStats);
 
 /**
  * @swagger

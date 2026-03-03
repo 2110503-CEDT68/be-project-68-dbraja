@@ -163,3 +163,57 @@ exports.deleteRegistration = async(req,res,next)=>{
         });
     }
 }
+
+// @desc    Get registration statistics
+// @route   GET /api/v1/registrations/stats
+// @access  Private/Admin
+exports.getRegistrationStats = async (req, res, next) => {
+    try {
+        // 1. นับจำนวนการจองทั้งหมดที่มีในระบบ
+        const totalRegistrations = await Registration.countDocuments();
+
+        // 2. จัดกลุ่มดูว่าแต่ละบริษัทมียอดจองกี่คิว (ใช้ MongoDB Aggregation)
+        const companyStats = await Registration.aggregate([
+            {
+                $group: {
+                    _id: '$company',
+                    numRegistrations: { $sum: 1 } // นับทีละ 1 ตามที่มีข้อมูล
+                }
+            },
+            {
+                $lookup: {
+                    from: 'companies', // ไปเชื่อมกับ Collection 'companies'
+                    localField: '_id', // ใช้ _id ที่เป็น company ObjectId
+                    foreignField: '_id',
+                    as: 'companyData'
+                }
+            },
+            {
+                $unwind: '$companyData' // แตก Array ออกมา
+            },
+            {
+                $project: {
+                    _id: 0, // ไม่ต้องแสดง ObjectId
+                    companyName: '$companyData.name', // เอาแค่ชื่อบริษัท
+                    numRegistrations: 1 // เอาตัวเลขยอดจอง
+                }
+            },
+            {
+                $sort: { numRegistrations: -1 } // เรียงลำดับจากยอดจองมากไปน้อย
+            }
+        ]);
+
+        res.status(200).json({
+            success: true,
+            totalRegistrations,
+            companyStats
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Cannot get registration stats"
+        });
+    }
+};
